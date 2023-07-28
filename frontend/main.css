@@ -8,7 +8,7 @@ h1 {
     font: 1.3rem 'Inconsolata', monospace;  
     font-size:45px;
     text-align: left;
-    background-color: #444242;
+    background-color: #262626;
 }
 h10 {
 
@@ -49,7 +49,7 @@ a {
     font: 1.3rem 'Inconsolata', monospace;  
     font-size:35px;
     color: white;
-    background-color: #444242;
+    background-color: #262626;
     text-decoration: underline;
     text-decoration-color: #60D4A3;
 }
@@ -89,7 +89,7 @@ color: white;
 border-radius: 6px;
 width: 200px;
 height: 50px;
-background: #60D4A3;
+background: #262626;
 border-color: #60D4A3;
 margin: auto;
 }

@@ -13,38 +13,25 @@
         <h1>tellor data-specs registry</h1>
       </a>
     </header>
+    
     <div class="box">
 
-      <p style="font-size: 20px;"> Manage your Query Type</p>
-
-      <section>
-        <h2 >connect your wallet:</h2>
-        <button id="connectButton" onclick="App.init()" disabled>Connect</button>
-        <p>connected address:</p>
-        <p id="connectedAddress"></p>
-        <p id="tokenBalance"></p> 
-         <!--<p id="stakedTokenBalance"></p>-->
-      </section>
-      <section>
-        <p> contract address:</p>
-        <p id="contestAddress"></p>
-      </section>
-      <section>
-                
-        <h2>Manage Your Query Types</h2>
-        
-        <p><input style="width: 150px;" type="text" id="_queryType" placeholder="queryType name (string)"/></p>
+      <p style="font-size: 30px; text-align: center"> Manage your Query Type</p>
+        <button id="connectButton" onclick="App.init()" disabled>Connect Wallet</button>
+        <p style="font-size: 20px;">connected address: <span style="font-size: 12px;" id="connectedAddress"></span></p>
+        <p style="font-size: 20px;">TRB in wallet: <span style="font-size: 12px;" id="tokenBalance"></span> </p>
+        <p style="font-size: 20px;">Enter the Query Type Name You Wish To Manage Here: <input style="width: 150px;" type="text" id="_queryType" placeholder="queryType name (string)"/></p>
         <p><input style="width: 350px;" type="text" id="_owner" placeholder="owner address (set only by owner)"/> <button id="_owner" onclick="App.setOwnerAddress()">Set Owner Address</button></p>
         <p><input style="width: 350px;" type="text" id="_manager" placeholder="manager address (set only by owner)"/> <button id="_manager" onclick="App.setManagerAddress()">Set Mgr Address</button></p>
-        <p>Add <input style="width: 50px;"type="text" id="_amountTRB" placeholder=" #"/> TRB to Extend Registration <button id="_amountTRB" onclick="App.extendRegistration()">Add TRB</button></p>
-        <p> ( cost per year - <span id="costPerYearInTRB"></span> TRB ) </p>
+        <p>Add <input style="width: 50px;"type="text" id="_amountTRB" placeholder=" #"/> TRB to Extend Registration     <button style="margin-left: 20px;" id="_amountTRB" onclick="App.extendRegistration()">Add TRB</button></p>
+        <p> ( current cost per year - <span id="costPerYearInTRB"></span> TRB ) </p>
         <p><input style="width: 485px;" type="text" id="_docHash" placeholder="Doc Hash (set only by manager)" ></input> <button id="docHash" onclick="App.setDocumentHash()">Set Doc Hash</button></p>
-         <!--<button id="reportValue" onclick="App.reportValue()">Submit Value</button>-->
-      </section>
+        <p > <a style="font-size: 15px; text-align: left;" href="https://nft.storage/docs/how-to/nftup/">
+          *upload doc & create ipfs link for Document Hash here
+        </a> 
+      </p>
 
-        <!--<h2>stake the trb token:</h2>
-        <input style="width: 285px;" type="text" id="stakeAmount" placeholder="actual # of tokens i.e. '100' for 100 tokens"/>
-        <button id="stakeToken" onclick="App.stakeToken()">stake</button>-->
+
   
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
     <script src="./extensions/jquery.min.js"></script>

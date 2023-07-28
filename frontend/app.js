@@ -137,6 +137,11 @@ var App = {
     if (tokenBalanceElement) {
       tokenBalanceElement.innerHTML = App.tokenBalance 
     }
+
+    var getCostPerYearInTRBElement = document.getElementById("getCostPerYearInTRB");
+    if (getCostPerYearInTRBElement) {
+      getCostPerYearInTRBElement.innerHTML = App.contracts.Contest.methods.getCostPerYearInTRB
+    }
   
   
     App.getTokenBalance();

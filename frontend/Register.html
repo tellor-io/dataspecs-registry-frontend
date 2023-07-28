@@ -15,31 +15,19 @@
     </header>
 
     <div class="box">
-      <p style="text-align: center; font-size: 20px;"> Register a new Query Type</p>
+      <p style= "font-size:20px; text-align: center"> Register a new Query Type</p>
 
-      <section>
-        <h2 >connect your wallet:</h2>
-        <button id="connectButton" onclick="App.init()" disabled>Connect</button>
-        <p>connected address:</p>
+        <button id="connectButton" onclick="App.init()" disabled>Connect Wallet</button>
+        <p style= "text-align: left; font-size: 20px;"> connected address: <span style="font-size: 14px;" id="connectedAddress"></span></p>
         <p id="connectedAddress"></p>
-        <p>trb in wallet:</p>
-        <p id="tokenBalance"></p>
-         <!--<p id="stakedTokenBalance"></p>-->
-      </section>
-      <section>
-        <p> contract address:</p>
-        <p id="contestAddress"></p>
-      </section>
-      
+        <p style="font-size: 20px;"> trb in wallet:<span style="font-size: 14px;" id="tokenBalance"></span></p>
+          <!--<p id="stakedTokenBalance"></p>-->
         </p>
         <p><input style="width: 185px;" type="text" id="_queryType" placeholder="_queryType name (string)"/></p>
         <p><input style="width: 120px;"type="text" id="_amount" placeholder="_amount (uint256)"/> TRB</p>
         <p>(*minimum <span id="costPerYearInTRB"></span> TRB / yr) </p>
 
         <button id="reportValue" onclick="App.reportValue()">register queryType</button>
-      </section>
-    
-
     </div>
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
     <script src="./extensions/jquery.min.js"></script>
