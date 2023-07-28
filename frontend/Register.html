@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data-Specs Registry</title>
+    <link rel="stylesheet" href="main.css" />
+  </head>
+  <body>
+    <header>
+      <a href="index.html">
+        <h1>tellor data-specs registry</h1>
+      </a>
+    </header>
+
+    <div class="box">
+      <p style="text-align: center; font-size: 20px;"> Register a new Query Type</p>
+
+      <section>
+        <h2 >connect your wallet:</h2>
+        <button id="connectButton" onclick="App.init()" disabled>Connect</button>
+        <p>connected address:</p>
+        <p id="connectedAddress"></p>
+        <p>trb in wallet:</p>
+        <p id="tokenBalance"></p>
+         <!--<p id="stakedTokenBalance"></p>-->
+      </section>
+      <section>
+        <p> contract address:</p>
+        <p id="contestAddress"></p>
+      </section>
+      
+        </p>
+        <p><input style="width: 185px;" type="text" id="_queryType" placeholder="_queryType name (string)"/></p>
+        <p><input style="width: 120px;"type="text" id="_amount" placeholder="_amount (uint256)"/> TRB</p>
+        <p>(*minimum <span id="costPerYearInTRB"></span> TRB / yr) </p>
+
+        <button id="reportValue" onclick="App.reportValue()">register queryType</button>
+      </section>
+    
+
+    </div>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
+    <script src="./extensions/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.7.3/web3.min.js"></script>
+    <script src="./extensions/web3.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
