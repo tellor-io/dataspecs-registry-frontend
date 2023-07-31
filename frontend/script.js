@@ -33,8 +33,12 @@ client.query({ query: QUERY })
     
     // Step 1: Create a mapping object for _queryType and documentHash
     const queryTypeToDocHash = {};
+    const queryTypeToBlockNumber = {};
     documentHashUpdateds.forEach(item => {
-      queryTypeToDocHash[item._queryType] = item._documentHash;
+      if ( typeof queryTypeToBlockNumber[item._queryType] === 'undefined' || queryTypeToBlockNumber[item._queryType] < item.blockNumber) {
+        queryTypeToBlockNumber[item._queryType] = item.blockNumber
+        queryTypeToDocHash[item._queryType] = item._documentHash;
+      }
     });
     
     const table = document.createElement('table');
