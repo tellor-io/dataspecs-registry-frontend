@@ -54,6 +54,15 @@ a {
     text-decoration-color: #60D4A3;
 }
 
+a1 {
+    font: 1.3rem 'Inconsolata', monospace;  
+    font-size:15px;
+    color: white;
+    background-color: #262626;
+    text-decoration: underline;
+    text-decoration-color: #60D4A3;
+}
+
 table {
     display: table;
     width: 100%;
