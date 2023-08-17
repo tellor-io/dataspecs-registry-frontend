@@ -24,7 +24,22 @@ var App = {
       console.log("Using localhost");
       web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
     }
-    return App.initEth();
+
+  },
+
+  connectWallet: function () {
+    ethereum
+      .request({ method: "eth_requestAccounts" })
+      .then(function (accounts) {
+        console.log("Ethereum enabled");
+        App.account = accounts[0];
+        console.log("In initEth: " + App.account);
+        web3.eth.getChainId().then(function (result) {
+          App.chainId = result;
+          console.log("Chain ID: " + App.chainId);
+          return App.initContestContract();
+        });
+      });
   },
 
   initEth: function () {
@@ -47,7 +62,7 @@ var App = {
     $.getJSON(pathToAbi, function (abi) {
       App.contracts.Contest = new web3.eth.Contract(abi);
       console.log(App.chainId)
-      App.contracts.Contest.options.address = "0x9413c3b2Fb74A7b7e6CDeBa683b31646Ceb534F2" 
+      App.contracts.Contest.options.address = "0x06Be23ea84148a5E439dFe2A0bcCE441ea74E2D6" 
       console.log(App.chainId)
       console.log("Contract initialized");
       console.log("Contract address: " +  App.contracts.Contest.options.address);
@@ -319,7 +334,12 @@ $(function () {
       if (connectButton) {
         connectButton.disabled = false;
       }
+      
     }
+    // Add an event listener to the 'Connect Wallet' button
+    $('#connectWalletButton').click(function () {
+      App.connectWallet();
+    });
     App.init();
   });
 });

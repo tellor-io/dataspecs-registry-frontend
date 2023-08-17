@@ -9,7 +9,12 @@ export const GraphContext = createContext()
 //ApolloClients
 
 const clientSepolia = new ApolloClient({
-  uri: 'https://api.studio.thegraph.com/query/33329/tellor-dataspecs-sepolia/v.0.0.3',
+  uri: 'https://api.thegraph.com/subgraphs/name/raynharr/tellor-dataspecs-registry',
+  cache: new InMemoryCache(),
+})
+
+const clientPolygonMatic = new ApolloClient({
+  uri: 'https://api.thegraph.com/subgraphs/name/raynharr/tellor-dataspecs-registry',
   cache: new InMemoryCache(),
 })
 
@@ -17,7 +22,8 @@ const Graph = ({ children }) => {
   //Component State
   
   const [graphSepoliaData, setGraphSepoliaData] = useState({})
- 
+  const [graphPolygonMaticData, setGraphPolygonMaticData] = useState({})
+
   const [allGraphData, setAllGraphData] = useState(null)
   const [decodedData, setDecodedData] = useState(null)
 
@@ -27,6 +33,12 @@ const Graph = ({ children }) => {
   //Sepolia
   const sepolia = useQuery(reporterQuery, {
     client: clientSepolia,
+    fetchPolicy: 'network-only',
+    pollInterval: 5000,
+  })
+
+  const polygonMatic = useQuery(reporterQuery, {
+    client: clientPolygonMatic,
     fetchPolicy: 'network-only',
     pollInterval: 5000,
   })
@@ -49,13 +61,28 @@ const Graph = ({ children }) => {
         console.log(setGraphSepoliaData)
       }
     }, [sepolia.data, sepolia.loading, sepolia.error]) //eslint-disable-line
+
+    useEffect(() => {
+      if (!polygonMatic) return
+      setGraphPolygonMaticData({
+        data: polygonMatic.data,
+        loading: polygonMatic.loading,
+        error: polygonMatic.error,
+      })
+    
+      return () => {
+        setGraphPolygonMaticData({})
+        console.log(setGraphPolygonMaticData)
+      }
+    }, [polygonMatic.data, polygonMatic.loading, polygonMatic.error])
   
 
   //For conglomerating data
   useEffect(() => {
     if (
 
-      !graphSepoliaData.data 
+      !graphSepoliaData.data ,
+      !graphPolygonMaticData.data
      
     )
       return
@@ -67,6 +94,12 @@ const Graph = ({ children }) => {
       event.txnLink = `https://sepolia.etherscan.io/tx/${event.txnHash}`
       eventsArray.push(event)
     })
+
+    graphPolygonMaticData.data.newReportEntities.forEach((event) => {
+    event.chain = 'Polygon Matic'
+    event.txnLink = `https://matic.etherscan.io/tx/${event.txnHash}`
+    eventsArray.push(event)
+    })
     
     
     let sorted = sortDataByProperty('_time', eventsArray)
@@ -75,7 +108,7 @@ const Graph = ({ children }) => {
     return () => {
       setAllGraphData(null)
     }
-  }, [graphSepoliaData])
+  }, [graphSepoliaData, graphPolygonMaticData])
 
   useEffect(() => {
     if (!allGraphData) return
@@ -88,6 +121,7 @@ const Graph = ({ children }) => {
 
   const GraphContextObj = {
     decodedData: decodedData,
+    polygonMaticData: graphPolygonMaticData,
   }
 
    // console.log(graphArboneData)

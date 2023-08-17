@@ -16,14 +16,22 @@
 
     <div class="box">
       <p style= "font-size:20px; text-align: center"> Register a new Query Type</p>
-
-        <button id="connectButton" onclick="App.init()" disabled>Connect Wallet</button>
+      <button id="connectButton">Connect Wallet</button>
+      <script>
+        // Check if the element exists before adding the event listener
+        var connectButton = document.getElementById("connectButton");
+        if (connectButton) {
+          connectButton.addEventListener("click", function() {
+            App.connectWallet();
+          });
+        }
+      </script>
         <p style= "text-align: left; font-size: 20px;"> connected address: <span style="font-size: 14px;" id="connectedAddress"></span></p>
-        <p id="connectedAddress"></p>
+
         <p style="font-size: 20px;"> trb in wallet:<span style="font-size: 14px;" id="tokenBalance"></span></p>
           <!--<p id="stakedTokenBalance"></p>-->
         </p>
-        <p><input style="width: 185px;" type="text" id="_queryType" placeholder="_queryType name (string)"/>*be sure to reference already existing queryTypes <a1  href="https://bafybeigqmwjyiyfdjb7qa5e2i7rzckokbdurxrnrcrhlwcadyxfmmzcalu.ipfs.dweb.link/"> here</a1> & <a1 href="index.html">here</a1> first!</a1> </p>
+        <p><input style="width: 185px;" type="text" id="_queryType" placeholder="_queryType name (string)"/></p>
       
         <p><input style="width: 120px;"type="text" id="_amount" placeholder="_amount (uint256)"/> TRB</p>
         <p>(*minimum <span id="costPerYearInTRB"></span> TRB / yr) </p>

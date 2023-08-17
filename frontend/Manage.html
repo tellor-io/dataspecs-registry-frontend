@@ -6,6 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Data-Specs Registry</title>
     <link rel="stylesheet" href="main.css" />
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("connectButton").addEventListener("click", function() {
+          App.connectWallet();
+        });
+      });
+    </script>
   </head>
   <body>
     <header>
@@ -17,7 +24,24 @@
     <div class="box">
 
       <p style="font-size: 30px; text-align: center"> Manage your Query Type</p>
-        <button id="connectButton" onclick="App.init()" disabled>Connect Wallet</button>
+        <button id="connectButton">Connect Wallet</button>
+        <script>
+          document.getElementById("connectButton").addEventListener("click", function() {
+            if (window.ethereum) {
+              ethereum.request({ method: 'eth_requestAccounts' }).then(function(accounts) {
+                App.account = accounts[0];
+                console.log("Connected address: " + App.account);
+                App.initContestContract();
+              }).catch(function(error) {
+                console.error(error);
+                // Handle error if the user rejects the connection request
+              });
+            } else {
+              console.error("MetaMask is not installed");
+              // Handle the case when MetaMask is not installed
+            }
+          });
+        </script>
         <p style="font-size: 20px;">connected address: <span style="font-size: 12px;" id="connectedAddress"></span></p>
         <p style="font-size: 20px;">TRB in wallet: <span style="font-size: 12px;" id="tokenBalance"></span> </p>
         <p style="font-size: 20px;"> <input style="width: 150px;" type="text" id="_queryType" placeholder="queryType name (string)"/> <- First enter the Query Type Name You Wish To Manage </p>
