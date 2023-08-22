@@ -3,28 +3,26 @@ var App = {
   contracts: {},
   account: "0x0",
   accounts: [],
-  contestAddress: {}, 
+  contestAddress: {},
   tokenAddress: {},
   web3,
   tokenDecimals: 0,
+  chainId: 0, // Add a chainId property
 
-  
   init: function () {
     return App.initWeb3();
   },
-
-  
 
   initWeb3: function () {
     if (typeof web3 !== "undefined") {
       console.log("Using web3 detected from external source like Metamask");
       App.web3Provider = window.ethereum;
       web3 = new Web3(window.ethereum);
+      web3.setProvider(App.web3Provider);
     } else {
       console.log("Using localhost");
       web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
     }
-
   },
 
   connectWallet: function () {
@@ -37,43 +35,85 @@ var App = {
         web3.eth.getChainId().then(function (result) {
           App.chainId = result;
           console.log("Chain ID: " + App.chainId);
-          return App.initContestContract();
+          return App.getChainId();
         });
       });
   },
 
-  initEth: function () {
-    ethereum
-      .request({ method: "eth_requestAccounts" })
-      .then(function (accounts) {
-        console.log("Ethereum enabled");
-        App.account = accounts[0];
-        console.log("In initEth: " + App.account);
-        web3.eth.getChainId().then(function (result) {
-          App.chainId = result;
-          console.log("Chain ID: " + App.chainId);
-          return App.initContestContract();
-        })
-      });
+  getChainId: function () {
+    web3.eth.getChainId().then(function (result) {
+      App.chainId = result;
+      console.log("Chain ID: " + App.chainId);
+      App.setTokenAddress(); // Call the setTokenAddress function here
+      return App.setTokenAddress();
+    });
+  },
+
+  setTokenAddress: function () {
+    if (App.chainId === 1) {
+      App.tokenAddress = "0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0"; // eth main
+    } else if (App.chainId === 137) {
+      App.tokenAddress = "0xE3322702BEdaaEd36CdDAb233360B939775ae5f1"; // polygon main
+    } else if (App.chainId === 80001) {
+      App.tokenAddress = "0xce4e32fe9d894f8185271aa990d2db425df3e6be"; // polygon mumbai
+    } else if (App.chainId === 100) {
+      App.tokenAddress = "0xAAd66432d27737ecf6ED183160Adc5eF36aB99f2"; // gnosis main
+    } else if (App.chainId === 10200) {
+      App.tokenAddress = "0xe7147C5Ed14F545B4B17251992D1DB2bdfa26B6d"; // Custom chain
+    }
+    App.initContestContract(); // Move the initContestContract function call here
+
   },
 
   initContestContract: function () {
     var pathToAbi = "./abis/TheContest.json";
     $.getJSON(pathToAbi, function (abi) {
       App.contracts.Contest = new web3.eth.Contract(abi);
-      console.log(App.chainId)
-      App.contracts.Contest.options.address = "0x06Be23ea84148a5E439dFe2A0bcCE441ea74E2D6" 
-      console.log(App.chainId)
+      console.log(App.chainId);
+      var networkText = document.getElementById("networkText");
+  
+      if (networkText) {
+        if (App.chainId === 11155111) {
+          networkText.innerText = "Sepolia Testnet";
+        } else if (App.chainId === 137) {
+          networkText.innerText = "Polygon Mainnet";
+        } else {
+          networkText.innerText =
+            "Unsupported network! Change to Polygon Mainnet or Sepolia Testnet and refresh the page";
+          networkText.classList.remove("red-text");
+          networkText.classList.add("red-text");
+        }
+      }
+  
+      if (App.chainId === 11155111) {
+        App.contestAddress = "0x9413c3b2Fb74A7b7e6CDeBa683b31646Ceb534F2"; // sepolia network
+      } else {
+        App.contestAddress = "0x06Be23ea84148a5E439dFe2A0bcCE441ea74E2D6"; // default address
+      }
+  
+      console.log(App.chainId);
       console.log("Contract initialized");
-      console.log("Contract address: " +  App.contracts.Contest.options.address);
-      console.log("this is contestaddress", App.contracts.contestAddress);
-      console.log("this is tokenbalance", App.tokenBalance);
-      App.contracts.Contest.methods.getCostPerYearInTRB().call().then(function(result) {
-        console.log("this is cost", result);
-        let costPerYearInTRB = parseFloat(result) / (10 ** 18);
-        document.getElementById("costPerYearInTRB").innerHTML = costPerYearInTRB.toFixed(3);
-      });
-      return App.initTokenContract();
+      console.log("Contract address: " + App.contestAddress);
+      console.log("This is contest address", App.contestAddress);
+      console.log("This is token balance", App.tokenBalance);
+  
+      App.contracts.Contest.options.address = App.contestAddress; // Set the address for the contract object
+  
+      // Call the getCostPerYearInTRB method
+      App.contracts.Contest.methods
+        .getCostPerYearInTRB()
+        .call()
+        .then(function (result) {
+          console.log("This is cost", result);
+          let costPerYearInTRB = parseFloat(result) / 10 ** 18;
+          var costPerYearInTRBElement = document.getElementById("costPerYearInTRB");
+if (costPerYearInTRBElement) {
+  costPerYearInTRBElement.innerHTML = costPerYearInTRB.toFixed(3);
+}
+        })
+        .then(function () {
+          return App.initTokenContract(); // Call initTokenContract after setting the address
+        });
     });
   },
 
@@ -82,40 +122,40 @@ var App = {
     $.getJSON(pathToAbi, function (abi) {
       App.contracts.Token = new web3.eth.Contract(abi);
       if (App.chainId === 5) {
-        App.contracts.Token.options.address = "0x51c59c6cAd28ce3693977F2feB4CfAebec30d8a2" //eth goerli 
+        App.contracts.Token.options.address = "0x51c59c6cAd28ce3693977F2feB4CfAebec30d8a2"; //eth goerli 
       } 
       if (App.chainId === 1)  {
-        App.contracts.Token.options.address = "0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0" // eth main
+        App.contracts.Token.options.address = "0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0"; // eth main
       } 
       if (App.chainId === 137)  {
-        App.contracts.Token.options.address = "0xE3322702BEdaaEd36CdDAb233360B939775ae5f1" // polygon main
+        App.contracts.Token.options.address = "0xE3322702BEdaaEd36CdDAb233360B939775ae5f1"; // polygon main
       }
       if (App.chainId === 80001)  {
-        App.contracts.Token.options.address = "0xce4e32fe9d894f8185271aa990d2db425df3e6be" // polygon mumbai
+        App.contracts.Token.options.address = "0xce4e32fe9d894f8185271aa990d2db425df3e6be"; // polygon mumbai
       } 
       if (App.chainId === 100)  {
-        App.contracts.Token.options.address = "0xAAd66432d27737ecf6ED183160Adc5eF36aB99f2" // gnosis main
+        App.contracts.Token.options.address = "0xAAd66432d27737ecf6ED183160Adc5eF36aB99f2"; // gnosis main
       } 
       if (App.chainId === 10200)  {
-        App.contracts.Token.options.address = "0xe7147C5Ed14F545B4B17251992D1DB2bdfa26B6d" // gnosis chiado
+        App.contracts.Token.options.address = "0xe7147C5Ed14F545B4B17251992D1DB2bdfa26B6d"; // gnosis chiado
       }
       if (App.chainId === 10)  {
-        App.contracts.Token.options.address = "0xaf8cA653Fa2772d58f4368B0a71980e9E3cEB888" // optimism mainnet
+        App.contracts.Token.options.address = "0xaf8cA653Fa2772d58f4368B0a71980e9E3cEB888"; // optimism mainnet
       }
       if (App.chainId === 420)  {
-        App.contracts.Token.options.address = "0x3251838bd813fdf6a97D32781e011cce8D225d59" //optimism goerli
+        App.contracts.Token.options.address = "0x3251838bd813fdf6a97D32781e011cce8D225d59"; //optimism goerli
       }
       if (App.chainId === 42161)  {
-        App.contracts.Token.options.address = "0xd58D345Fd9c82262E087d2D0607624B410D88242" // arbitrum one
+        App.contracts.Token.options.address = "0xd58D345Fd9c82262E087d2D0607624B410D88242"; // arbitrum one
       }
       if (App.chainId === 421613)  {
-        App.contracts.Token.options.address = "0x8d1bB5eDdFce08B92dD47c9871d1805211C3Eb3C" // arbitrum goerli
+        App.contracts.Token.options.address = "0x8d1bB5eDdFce08B92dD47c9871d1805211C3Eb3C"; // arbitrum goerli
       }
       if (App.chainId === 3141)  {
-        App.contracts.Token.options.address = "0xe7147C5Ed14F545B4B17251992D1DB2bdfa26B6d" // filecoin hyperspace
+        App.contracts.Token.options.address = "0xe7147C5Ed14F545B4B17251992D1DB2bdfa26B6d"; // filecoin hyperspace
       }
       if (App.chainId === 11155111)  {
-        App.contracts.Token.options.address = "0x80fc34a2f9FfE86F41580F47368289C402DEc660" // sepolia hyperspace
+        App.contracts.Token.options.address = "0x80fc34a2f9FfE86F41580F47368289C402DEc660"; // sepolia hyperspace
       }
       console.log("Token contract initialized");
       console.log(
@@ -157,7 +197,18 @@ var App = {
     if (getCostPerYearInTRBElement) {
       getCostPerYearInTRBElement.innerHTML = App.contracts.Contest.methods.getCostPerYearInTRB
     }
-  
+    var networkText = document.getElementById("networkText");
+
+if (networkText) {
+  if (App.chainId === 11155111) {
+    networkText.innerText = "Sepolia Testnet";
+  } else if (App.chainId === 137) {
+    networkText.innerText = "Polygon Mainnet";
+  } else {
+    networkText.innerText = "unsupported network! change to polygon mainnet or sepolia testnet and refresh the page";
+    networkText.classList.add("red-text"); 
+  }
+}
   
     App.getTokenBalance();
   },
@@ -179,6 +230,7 @@ var App = {
       });
   },
 
+
   /*getStakedTokenBalance: function () {
     App.contracts.Contest.methods
       .getStakerInfo(App.account)
@@ -191,13 +243,15 @@ var App = {
   },*/
 
   getCostPerYearInTRB: function () {
-    // Check if the current page is Register.html
-    if (window.location.pathname.endsWith('/Register.html')) {
+    // Check if the current page is either Register.html or Manage.html
+    if (window.location.pathname.endsWith('/Register.html') || window.location.pathname.endsWith('/Manage.html')) {
       let costPerYearInTRBElement = document.getElementById("costPerYearInTRB");
       if (costPerYearInTRBElement) {
         App.contracts.Contest.methods.getCostPerYearInTRB().call().then(function(result) {
           console.log("getCostPerYearInTRB result:", result);
-          costPerYearInTRBElement.innerHTML = result; // Display the result without rounding
+          if (costPerYearInTRBElement) {
+            costPerYearInTRBElement.innerHTML = result; // Display the result without rounding
+          }
         });
       }
     }
@@ -207,6 +261,9 @@ var App = {
     return ethers.BigNumber.from(n).mul(ethers.BigNumber.from(10).pow(18));
 },
 
+getConnectedChain: function() {
+  return App.contracts.Contest.options.address;
+},
 
    /*uintTob32: function (n) {
     let vars = web3.utils.toHex(n);
@@ -225,27 +282,68 @@ var App = {
   },
   
 
+  checkAllowance: function(action) {
+    App.contracts.Token.methods.allowance(App.account, App.contracts.Contest.options.address).call()
+      .then(function (allowance) {
+        // Convert the allowance to BigInt for comparison
+        const convertedAllowance = BigInt(allowance);
+        // Convert the desired amount to BigInt for comparison
+        const convertedAmount = BigInt(amount) * BigInt(10 ** 18);
+  
+        if (convertedAllowance >= convertedAmount) {
+          // The user has already approved enough tokens
+          if (action === 'extendRegistration') {
+            App.contracts.Contest.methods.extendRegistration(queryType, convertedAmount).send({ from: App.account })
+            .then(function(result) {
+                console.log(result);
+                // Handle the result of extending registration here
+              })
+              .catch(function(error) {
+                // Handle the error during extending registration here
+              });
+          } else if (action === 'register') {
+            App.contracts.Contest.methods.register(queryType, convertedAmount).send({ from: App.account })
+            .send({ from: App.account })  
+            .then(function(result) {
+                console.log(result);
+                // Handle the result of registration here
+              })
+              .catch(function(error) {
+                // Handle the error during registration here
+              });
+          }
+        } else {
+          // The user has not approved enough tokens, show a message or take appropriate action
+          console.log("Please approve enough tokens to spend.");
+  
+          // Call the approve function to approve the desired amount of tokens
+          App.contracts.Token.methods.approve(App.contracts.Contest.options.address, convertedAmount).send({ from: App.account })
+            .then(function(result) {
+              console.log(result);
+              // Handle the result of the approval here
+            })
+            .catch(function(error) {
+              // Handle the error during approval here
+            });
+        }
+      })
+      .catch(function (error) {
+        // Handle the error here
+        console.log("Error checking allowance:", error);
+      });
+  },
+
   reportValue: function () {
     queryType = document.getElementById("_queryType").value;
     amount = document.getElementById("_amount").value;
     convertedAmount = BigInt(amount) * BigInt(10 ** 18);
-    //nonce = document.getElementById("_nonce").value;
-    //queryData = document.getElementById("_queryData").value;
-    console.log("_queryType: " + queryType);
-    console.log("amount:" + convertedAmount);
-    App.contracts.Token.methods.approve(App.contracts.Contest.options.address, amount).send({ from: App.account })
-    .then(function() {
-      // The approval was successful, you can now call the function that requires the allowance
-    })
-    .catch(function(error) {
-      // There was an error, handle it here
-    });
-    App.contracts.Contest.methods
-      .register(queryType, convertedAmount)
-      .send({ from: App.account })
-      .then(function (result) {
-        console.log(result);
-      });
+  
+    // Check the allowance of tokens for the user
+    if (window.location.pathname.endsWith('/Manage.html')) {
+      App.checkAllowance('extendRegistration');
+    } else if (window.location.pathname.endsWith('/Register.html')) {
+      App.checkAllowance('register');
+    }
   },
 
   setOwnerAddress: function () {
@@ -278,17 +376,19 @@ var App = {
     queryType = document.getElementById("_queryType").value;
     amountTRB = document.getElementById("_amountTRB").value;
     convertedAmountTRB = BigInt(amountTRB) * BigInt(10 ** 18);
+    amount = amountTRB;
     //queryData = document.getElementById("_queryData").value;
     console.log("_amountTRB: " + amountTRB);
     console.log("_queryType: " + queryType);
 
-    App.contracts.Contest.methods
-      .extendRegistration(queryType, convertedAmountTRB)
-      .send({ from: App.account })
-      .then(function (result) {
-        console.log(result);
-      });
+    // Check the allowance of tokens for the user
+    if (window.location.pathname.endsWith('/Manage.html')) {
+      App.checkAllowance('extendRegistration');
+    } else if (window.location.pathname.endsWith('/Register.html')) {
+      App.checkAllowance('register');
+    }
   },
+
 
   setDocumentHash: function () {
     queryType = document.getElementById("_queryType").value;
@@ -332,14 +432,21 @@ $(function () {
       // Enable the connectButton if it exists
       var connectButton = document.getElementById("connectButton");
       if (connectButton) {
-        connectButton.disabled = false;
+        connectButton.addEventListener("click", function() {
+          App.connectWallet();
+          var connectedChain = document.getElementById("connectedChain");
+          if (connectedChain) {
+            connectedChain.textContent = getConnectedChain();
+          }
+        });
       }
-      
     }
+
     // Add an event listener to the 'Connect Wallet' button
     $('#connectWalletButton').click(function () {
       App.connectWallet();
     });
+
     App.init();
   });
 });

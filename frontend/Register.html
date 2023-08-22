@@ -13,35 +13,46 @@
         <h1>tellor data-specs registry</h1>
       </a>
     </header>
-
+    <a href="Manage.html">
+      <h3>Manage</h3>
+    </a>
     <div class="box">
-      <p style= "font-size:20px; text-align: center"> Register a new Query Type</p>
+      <p style="font-size: 20px; text-align: center">Register a new Query Type</p>
       <button id="connectButton">Connect Wallet</button>
-      <script>
-        // Check if the element exists before adding the event listener
-        var connectButton = document.getElementById("connectButton");
-        if (connectButton) {
-          connectButton.addEventListener("click", function() {
-            App.connectWallet();
-          });
-        }
-      </script>
-        <p style= "text-align: left; font-size: 20px;"> connected address: <span style="font-size: 14px;" id="connectedAddress"></span></p>
-
-        <p style="font-size: 20px;"> trb in wallet:<span style="font-size: 14px;" id="tokenBalance"></span></p>
-          <!--<p id="stakedTokenBalance"></p>-->
-        </p>
-        <p><input style="width: 185px;" type="text" id="_queryType" placeholder="_queryType name (string)"/></p>
-      
-        <p><input style="width: 120px;"type="text" id="_amount" placeholder="_amount (uint256)"/> TRB</p>
-        <p>(*minimum <span id="costPerYearInTRB"></span> TRB / yr) </p>
-
-        <button id="reportValue" onclick="App.reportValue()">register queryType</button>
+      <p>*Currently available on Polygon Mainnet or Sepolia Testnet</p>
+      <p style="text-align: left; font-size: 20px;">connected chain: <span style="font-size: 14px;" id="networkText"></span></p>
+      <!-- Add this element to display the text -->
+      <p style="text-align: left; font-size: 20px;">connected address: <span style="font-size: 14px;" id="connectedAddress"></span></p>
+      <p style="font-size: 20px;">trb in wallet: <span style="font-size: 14px;" id="tokenBalance"></span></p>
+      <!--<p id="stakedTokenBalance"></p>-->
+      <p><input style="width: 185px;" type="text" id="_queryType" placeholder="_queryType name (string)" /></p>
+      <p><input style="width: 120px;" type="text" id="_amount" placeholder="_amount (uint256)" /> TRB</p>
+      <p>(*minimum <span id="costPerYearInTRB"></span> TRB / yr)</p>
+      <button id="reportValue" onclick="App.reportValue()">register queryType</button>
     </div>
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
     <script src="./extensions/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.7.3/web3.min.js"></script>
     <script src="./extensions/web3.min.js"></script>
     <script src="app.js"></script>
+    <script>
+      // Check if the element exists before adding the event listener
+      var connectButton = document.getElementById("connectButton");
+      if (connectButton) {
+        connectButton.addEventListener("click", function () {
+          App.connectWallet();
+        });
+      }
+    
+      var contestAddress = document.getElementById("contestAddress");
+var networkText = document.getElementById("networkText");
+if (contestAddress && contestAddress.innerText.trim() === "0x9413c3b2Fb74A7b7e6CDeBa683b31646Ceb534F2") {
+  networkText.innerText = "sepolia testnet";
+} else if (contestAddress && contestAddress.innerText.trim() === "0x06Be23ea84148a5E439dFe2A0bcCE441ea74E2D6") {
+  networkText.innerText = "polygon mainnet";
+} else {
+  networkText.innerText = "";
+}
+    </script>
   </body>
 </html>

@@ -24,6 +24,14 @@ h2 {
     text-align: center;
     margin-bottom: 0;
 }
+h3 {
+    font: 1.3rem 'Inconsolata', monospace;  
+    font-size:20px;
+    color: #000000; 
+    text-align: right;
+    margin-bottom: 0;
+    padding-right: 100px;
+}
 h20 {
     font: 1.3rem 'Inconsolata', monospace;  
     font-size:20px;
@@ -124,4 +132,10 @@ section {
     margin-bottom: -50px; /* Adjust this value to increase or decrease the gap */
   }
 
-  
+  .red-text {
+    color: red;
+  }
+
+  #uriDropdown {
+    width: 300px; /* Adjust the width value as per your preference */
+  }

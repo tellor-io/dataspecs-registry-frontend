@@ -20,7 +20,10 @@
         <h1>tellor data-specs registry</h1>
       </a>
     </header>
-    
+    <a href="Register.html">
+      <h3 
+      >Register</h3>
+    </a>
     <div class="box">
 
       <p style="font-size: 30px; text-align: center"> Manage your Query Type</p>
@@ -42,6 +45,8 @@
             }
           });
         </script>
+        <p>*Currently available on Polygon Mainnet or Sepolia Testnet</p>
+        <p style="text-align: left; font-size: 20px;">connected chain: <span style="font-size: 14px;" id="networkText"></span></p>
         <p style="font-size: 20px;">connected address: <span style="font-size: 12px;" id="connectedAddress"></span></p>
         <p style="font-size: 20px;">TRB in wallet: <span style="font-size: 12px;" id="tokenBalance"></span> </p>
         <p style="font-size: 20px;"> <input style="width: 150px;" type="text" id="_queryType" placeholder="queryType name (string)"/> <- First enter the Query Type Name You Wish To Manage </p>
@@ -62,5 +67,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.7.3/web3.min.js"></script>
     <script src="./extensions/web3.min.js"></script>
     <script src="app.js"></script>
+    <script>
+      // Check if the element exists before adding the event listener
+      var connectButton = document.getElementById("connectButton");
+      if (connectButton) {
+        connectButton.addEventListener("click", function () {
+          App.connectWallet();
+        });
+      }
+    
+      var contestAddress = document.getElementById("contestAddress");
+      
+    </script>
   </body>
 </html>

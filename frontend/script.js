@@ -1,8 +1,10 @@
-import { ApolloClient, InMemoryCache, gql } from 'https://cdn.skypack.dev/@apollo/client@3.4.10';
+import { ApolloClient, InMemoryCache, gql, HttpLink } from 'https://cdn.skypack.dev/@apollo/client@3.4.10';
+let tableUri = 'https://api.thegraph.com/subgraphs/name/tellor-io/tellor-data-specs-registry'; // Default URI
 
-const client = new ApolloClient({
-  uri: 'https://api.thegraph.com/subgraphs/name/tellor-io/tellor-data-specs-registry',
-  cache: new InMemoryCache(),
+uriDropdown.addEventListener('change', function(event) {
+  event.preventDefault(); // Prevent the default behavior of the dropdown menu
+  tableUri = uriDropdown.value;
+  updateTableData();
 });
 
 const QUERY = gql`
@@ -19,6 +21,20 @@ const QUERY = gql`
       id
       _queryType
       _documentHash
+      blockNumber
+    }
+
+    ownerUpdateds  {
+      id
+      _queryType
+      _owner
+      blockNumber
+    }
+
+    registrationExtendeds  {
+      id
+      _queryType
+      _expirationTime
       blockNumber
     }
   }
@@ -325,9 +341,21 @@ const hardCodedItems = [
   },
   
 ];
-hardCodedItems.sort((a, b) => a._queryType.localeCompare(b._queryType));
+const client = new ApolloClient({
+  uri: tableUri,
+  cache: new InMemoryCache(),
+});
 
-client.query({ query: QUERY })
+function updateTableData() {
+  const uriDropdown = document.getElementById('uriDropdown');
+  const selectedUri = uriDropdown.value;
+
+  const client = new ApolloClient({
+    uri: selectedUri,
+    cache: new InMemoryCache(),
+  });
+
+  client.query({ query: QUERY })
   .then(response => {
     console.log(response);
 
@@ -342,7 +370,23 @@ client.query({ query: QUERY })
       queryTypeToDocHash[item._queryType] = item._documentHash;
     });
 
-    const table = document.createElement('table'); // Declare the 'table' variable here
+    const ownerUpdateds = response.data.ownerUpdateds;
+
+    const queryTypeToOwnerUpdateds = {};
+    ownerUpdateds.forEach(item => {
+      queryTypeToOwnerUpdateds[item._queryType] = item._owner;
+    });
+
+    const registrationExtendeds = response.data.registrationExtendeds;
+
+    const queryTypeToRegistrationExtendeds = {};
+    registrationExtendeds.forEach(item => {
+      queryTypeToRegistrationExtendeds[item._queryType] = item._expirationTime;
+    });
+
+
+
+    const table = document.createElement('table');
 
     const sortedItems = allItems.sort((a, b) => a._queryType.localeCompare(b._queryType));
     const headers = ['Query Type Name', 'Doc Hash', 'Owner Address', 'Expiration Date'];
@@ -371,15 +415,15 @@ client.query({ query: QUERY })
           row.appendChild(td);
         } else if (header === 'Expiration Date') {
           const td = document.createElement('td');
-td.textContent = item._expirationTime === 'Never' ? 'No Expiry' : new Date(item._expirationTime * 1000).toLocaleString();
-row.appendChild(td);
+          td.textContent = item._expirationTime === 'Never' ? 'No Expiry' : (queryTypeToRegistrationExtendeds[item._queryType] ? new Date(queryTypeToRegistrationExtendeds[item._queryType] * 1000).toLocaleString() : new Date(item._expirationTime * 1000).toLocaleString());
+          row.appendChild(td);
         } else if (header === 'Query Type Name') {
           const td = document.createElement('td');
           td.textContent = item._queryType;
           row.appendChild(td);
         } else if (header === 'Owner Address') {
           const td = document.createElement('td');
-          td.textContent = item._owner;
+          td.textContent = queryTypeToOwnerUpdateds[item._queryType] || item._owner;
           row.appendChild(td);
         } else {
           const td = document.createElement('td');
@@ -390,6 +434,17 @@ row.appendChild(td);
       table.appendChild(row);
     });
 
-    document.body.appendChild(table);
-  })
-  .catch(error => console.error('Error:', error));
+    // Clear the existing table data
+    const existingTable = document.getElementById('tableContainer');
+    if (existingTable) {
+      existingTable.innerHTML = '';
+    }
+
+    // Append the new table to the table container
+    const tableContainer = document.getElementById('tableContainer');
+    tableContainer.appendChild(table);
+  });
+}
+
+  // Call the updateTableData function initially
+  updateTableData();
